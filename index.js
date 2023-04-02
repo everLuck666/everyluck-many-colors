@@ -2,7 +2,9 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
-const { init: initDB, Counter } = require("./db");
+const https = require('https');
+const {httpGet} = require('./utils/request')
+// const { init: initDB, Counter } = require("./db");
 
 const logger = morgan("tiny");
 
@@ -33,6 +35,25 @@ app.post("/api/count", async (req, res) => {
   });
 });
 
+app.get("/api/getData", async (req, res) => {
+  // console.error('我请求过来了5', req);
+  const { bookId, sectionId } = req.query;
+  const options = {
+    "method": req.method,
+    "path": `https://golang-fkr4-1783471-1303969980.ap-shanghai.run.tcloudbase.com/milk_proxy/api/reader/book/section/get?book_id=${bookId}&section_id=${sectionId}`,       
+
+  }
+
+  console.error('参数', options, req.query);
+
+httpGet((data) => {
+  console.error('我是error-', data);
+  res.send(data);
+}, options.path);
+
+
+});
+
 // 获取计数
 app.get("/api/count", async (req, res) => {
   const result = await Counter.count();
@@ -52,7 +73,7 @@ app.get("/api/wx_openid", async (req, res) => {
 const port = process.env.PORT || 80;
 
 async function bootstrap() {
-  await initDB();
+  // await initDB();
   app.listen(port, () => {
     console.log("启动成功", port);
   });
