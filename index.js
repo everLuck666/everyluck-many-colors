@@ -54,6 +54,26 @@ httpGet((data) => {
 
 });
 
+/** 书架接口 */
+app.get("/api/getBooksInfo", async (req, res) => {
+  // console.error('我请求过来了5', req);
+  const { skip } = req.query;
+  const options = {
+    "method": req.method,
+    "path": `https://golang-fkr4-1783471-1303969980.ap-shanghai.run.tcloudbase.com/milk_proxy/api/reader/book/list?skip=${skip}&limit=10`,       
+
+  }
+
+  console.error('参数', options, req.query);
+
+httpGet((data) => {
+  console.error('我是error-', data);
+  res.send(data);
+}, options.path);
+
+
+});
+
 // 获取计数
 app.get("/api/count", async (req, res) => {
   const result = await Counter.count();
