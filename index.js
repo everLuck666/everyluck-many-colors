@@ -4,7 +4,9 @@ const cors = require("cors");
 const morgan = require("morgan");
 const https = require('https');
 const {httpGet} = require('./utils/request')
+const proxy   = require('express-http-proxy')
 // const { init: initDB, Counter } = require("./db");
+
 
 const logger = morgan("tiny");
 
@@ -13,6 +15,19 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 app.use(logger);
+
+
+// 配置代理 /
+let proxyConfig = {
+  URL: '43.139.247.92',
+  PORT: '5000'
+}
+// 访问 http://localhost:3000/hbapi 会转为  http://xx.xx.xx.xx:3000 请求
+app.use('/api', proxy('http://'+proxyConfig.URL+':'+proxyConfig.PORT, {
+  forwardPath: function(req, res) {
+    return require('url').parse(req.url).path;
+  }
+}))
 
 // 首页
 app.get("/", async (req, res) => {
