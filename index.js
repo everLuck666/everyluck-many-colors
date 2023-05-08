@@ -24,6 +24,7 @@ let proxyConfig = {
 }
 // 访问 http://localhost:3000/hbapi 会转为  http://xx.xx.xx.xx:3000 请求
 app.use('/api', proxy('http://'+proxyConfig.URL+':'+proxyConfig.PORT, {
+  preserveHostHdr: true,
   forwardPath: function(req, res) {
     return require('url').parse(req.url).path;
   }
