@@ -53,21 +53,6 @@ app.post('/upload/single', upload.single('file'), async (req, res) => {
   const token = req.get('token');
   const fileName = req.file.filename;
 
-  const form_data = new FormData();
-  form_data.append(
-    'file',
-    fs.createReadStream(`./public/${token}/${fileName}`),
-  );
-  const data = await fetch('http://43.139.247.92:5000/forum', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      token,
-      ...form_data.getHeaders(),
-    },
-    body: form_data,
-  });
-
   uploadFile(`./public/${token}/${fileName}`, token)
   
 
@@ -204,10 +189,13 @@ async function uploadFile(filePath, token) {
 
 
   console.error('====-----====')
-  fs.unlink(filePath, (err) => {
-    if (err) throw err;
-    console.log('文件已删除');
-  });
+  setTimeout(() => {
+    fs.unlink(filePath, (err) => {
+      if (err) throw err;
+      console.log('文件已删除');
+    });
+  }, 10000)
+
 
   // 响应最终会是类似以下的结果：
   // {
