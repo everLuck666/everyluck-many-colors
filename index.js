@@ -11,8 +11,11 @@ const utils = require('./utils/utils');
 const FormData = require('form-data');
 const fetch = require('node-fetch')
 const http = require('http');
-const needle = require('needle');
 const serveStatic = require('serve-static')
+const needle = require('needle');
+let axios = require('axios');
+const httpclient = require('urllib');
+const FormStream = require('formstream');
 // const { init: initDB, Counter } = require("./db");
 
 // 设置保存路径和文件名
@@ -47,28 +50,26 @@ app.use(serveStatic(rootPath))
 
 // 单个文件上传
 app.post('/upload/single', upload.single('file'), async (req, res) => {
-  // const token = req.get('token');
-  // const fileName = req.file.filename;
+  const token = req.get('token');
+  const fileName = req.file.filename;
 
-  // const form_data = new FormData();
-  // form_data.append(
-  //   'file',
-  //   fs.createReadStream(`./public/${token}/${fileName}`),
-  // );
+  const form_data = new FormData();
+  form_data.append(
+    'file',
+    fs.createReadStream(`./public/${token}/${fileName}`),
+  );
+  const data = await fetch('http://43.139.247.92:5000/forum', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      token,
+      ...form_data.getHeaders(),
+    },
+    body: form_data,
+  });
 
-  // const data = await fetch('http://43.139.247.92:5000/forum', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'multipart/form-data',
-  //     token,
-  //     ...form_data.getHeaders(),
-  //   },
-  //   body: form_data,
-  // });
-
-  // console.error('+++++', `./public/${token}/${fileName}`)
-
-  // console.error('=========', data)
+  uploadFile(`./public/${token}/${fileName}`, token)
+  
 
   res.json({
     code: 200,
@@ -173,3 +174,45 @@ async function bootstrap() {
 }
 
 bootstrap();
+
+
+async function uploadFile(filePath, token) {
+  // 构造对应的 form stream
+  const form = new FormStream();
+  form.field('foo', 'bar'); // 设置普通的 headers
+  form.file('file', filePath); // 添加文件，上传当前文件本身用于测试
+  // form.file('file2', __filename); // 执行多次来添加多文件
+  
+  // 发起请求
+  const url = 'http://43.139.247.92:5000/forum';
+  try {
+    const result = await httpclient.request(url, {
+      dataType: 'json',
+      method: 'POST',
+  
+      
+      // 生成符合 multipart/form-data 要求的请求 headers
+      headers: {...form.headers(), token,},
+      // 以 stream 模式提交
+      stream: form,
+    });
+
+    console.error('上传成功了吗==', result)
+  } catch (error) {
+    
+  }
+
+
+  console.error('====-----====')
+  fs.unlink(filePath, (err) => {
+    if (err) throw err;
+    console.log('文件已删除');
+  });
+
+  // 响应最终会是类似以下的结果：
+  // {
+  //   "file": "'use strict';\n\nconst For...."
+  // }
+}
+
+// run().catch(console.error);
