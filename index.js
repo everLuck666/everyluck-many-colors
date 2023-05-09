@@ -53,9 +53,9 @@ app.post('/upload/single', upload.single('file'), async (req, res) => {
   const token = req.get('token');
   const fileName = req.file.filename;
 
-  console.warn('上传token', token, fileName, `./public/${token}/${fileName}`, `${__dirname}/public/${token}/${fileName}`)
+  console.warn('上传token', token, fileName,`./public/${token}/${fileName}`)
 
-  uploadFile(`${__dirname}/public/${token}/${fileName}`, token)
+  uploadFile(`./public/${token}/${fileName}`, token)
   
 
   res.json({
