@@ -241,7 +241,7 @@ const uploadFile2 = async (fileName, token) => {
       headers: {...headerHere, token},}
     )
 
-    console.error('触发触发')
+    console.error('触发触发88888')
     
     // res.status(200).json(result.data)
   } catch (err) {
