@@ -88,7 +88,7 @@ app.post("/upload/single", function (req, res, next) {
       return;
     }
 
-    console.error('=====',files.file.newFilename)
+    console.error('=====2323',files.file.newFilename)
     const fileName = files.file.newFilename;
     // console.log('00000=0', fileName); // 包含需要的 newFilename 新文件名
     uploadFile(`./public/${fileName}`, token)
