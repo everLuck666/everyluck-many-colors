@@ -24,6 +24,7 @@ const storage = multer.diskStorage({
     const token = req.get('token');
     console.error('token', token);
     // await utils.exitsFolder(`../public/${token}`);
+    console.error('出发发布')
     // 设置文件存储路径
     cb(null, `./public`);
   },
