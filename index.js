@@ -50,7 +50,7 @@ const rootPath = path.join(__dirname, 'public')
 app.use(serveStatic(rootPath))
 
 // 单个文件上传
-app.post('/upload/single', upload.single('file'), async (req, res) => {
+app.post('/upload/single2', upload.single('file'), async (req, res) => {
   const token = req.get('token');
   const fileName = req.file.filename;
 
@@ -65,6 +65,39 @@ app.post('/upload/single', upload.single('file'), async (req, res) => {
     data: req.file,
   });
 });
+
+
+// 导入依赖
+const formidable = require("formidable");
+ 
+// 虽然 写的是 根路径，但实际访问的是 /upload 路径，如果 写了 /api ,那就是 /upload/api
+app.post("/upload/single", function (req, res, next) {
+  const token = req.get('token');
+  // 创建 form 对象
+  const form = formidable({
+    multiples: true,
+    // 保存上传的文件的路径
+    uploadDir: __dirname + "/public",
+    // 保留后缀
+    keepExtensions: true,
+  });
+  // 解析请求报文
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      next(err);
+      return;
+    }
+
+    console.error('=====',files.file.newFilename)
+    const fileName = files.file.newFilename;
+    // console.log('00000=0', fileName); // 包含需要的 newFilename 新文件名
+    uploadFile(`./public/${fileName}`, token)
+    res.send("ok");
+  });
+
+ 
+}
+);
 
 // 配置代理 /
 let proxyConfig = {
