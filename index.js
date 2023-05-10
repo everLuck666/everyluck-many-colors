@@ -23,9 +23,9 @@ const storage = multer.diskStorage({
   destination: async function (req, res, cb) {
     const token = req.get('token');
     console.error('token', token);
-    await utils.exitsFolder(`../public/${token}`);
+    // await utils.exitsFolder(`../public/${token}`);
     // 设置文件存储路径
-    cb(null, `./public/${token}`);
+    cb(null, `./public`);
   },
   filename: function (req, file, cb) {
     // 设置文件名（可以自己定义）
@@ -53,9 +53,9 @@ app.post('/upload/single', upload.single('file'), async (req, res) => {
   const token = req.get('token');
   const fileName = req.file.filename;
 
-  console.warn('上传token', token, fileName,`./public/${token}/${fileName}`)
+  console.warn('上传token', token, fileName,`./public/${fileName}`)
 
-  uploadFile(`./public/${token}/${fileName}`, token)
+  uploadFile(`./public/${fileName}`, token)
   
 
   res.json({
