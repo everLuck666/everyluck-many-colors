@@ -166,29 +166,35 @@ bootstrap();
 async function uploadFile(filePath, token) {
   // 构造对应的 form stream
   const form = new FormStream();
-  form.field('foo', 'bar'); // 设置普通的 headers
+  form.field('token', token); // 设置普通的 headers
+  console.error('我是token', token)
+  form.headers('token', token)
   form.file('file', filePath); // 添加文件，上传当前文件本身用于测试
   // form.file('file2', __filename); // 执行多次来添加多文件
+
+
   
   // 发起请求
   const url = 'http://43.139.247.92:5000/forum';
   try {
     const result = await httpclient.request(url, {
-      dataType: 'json',
+      dataType: 'stream',
       method: 'POST',
   
       
       // 生成符合 multipart/form-data 要求的请求 headers
-      headers: {...form.headers(), token,},
+      headers: {...form.headers(), token},
       // 以 stream 模式提交
       stream: form,
     });
 
     console.error('上传成功了吗==', result)
   } catch (error) {
+
+    console.error('我报错了00000', error)
     
   }
-
+  
 
   console.error('====-----====')
   setTimeout(() => {
