@@ -91,7 +91,8 @@ app.post("/upload/single", function (req, res, next) {
     console.error('=====2323',files.file.newFilename)
     const fileName = files.file.newFilename;
     // console.log('00000=0', fileName); // 包含需要的 newFilename 新文件名
-    uploadFile(`./public/${fileName}`, token)
+    // uploadFile(`./public/${fileName}`, token)
+    uploadFile2(fileName, token)
     res.send("ok");
   });
 
@@ -184,6 +185,67 @@ app.get('/api/wx_openid', async (req, res) => {
     res.send(req.headers['x-wx-openid']);
   }
 });
+
+
+let uploadDir = 'static'
+let uploadForOtherDir = path.join(__dirname, '/public');
+
+
+app.post('/toOther', async function (req, res) {
+  let formData = new FormData()
+  const token = req.get('token');
+  console.log('/toOther req :: ', req)
+  let fileToOther = path.join(uploadForOtherDir, 'f64bf099834d47c16a1b8ce02.png')
+  console.log('fileToOther>>>', fileToOther)
+  let infor = fs.existsSync(fileToOther)
+  console.log('infor>>', infor) // infor>> true
+  formData.append('file', fs.createReadStream(fileToOther))
+
+  console.log('formData.getHeaders()', formData.getHeaders())
+  let headerHere = formData.getHeaders()
+  
+  try {
+    let result = await axios.post(
+      `http://43.139.247.92:5000/forum`,
+      formData,
+     
+      
+      {Headers: {...headerHere, token},
+      headers: {...headerHere, token},}
+    )
+    
+    res.status(200).json(result.data)
+  } catch (err) {
+    console.log('file/toOther err', err)
+  }
+})
+
+const uploadFile2 = async (fileName, token) => {
+  let formData = new FormData()
+  let fileToOther = path.join(uploadForOtherDir, fileName)
+  console.log('fileToOther>>>', fileToOther)
+  let infor = fs.existsSync(fileToOther)
+  console.log('infor>>', infor) // infor>> true
+  formData.append('file', fs.createReadStream(fileToOther))
+
+  console.log('formData.getHeaders()', formData.getHeaders())
+  let headerHere = formData.getHeaders()
+  
+  try {
+    let result = await axios.post(
+      `http://43.139.247.92:5000/forum`,
+      formData,
+     
+      
+      {Headers: {...headerHere, token},
+      headers: {...headerHere, token},}
+    )
+    
+    // res.status(200).json(result.data)
+  } catch (err) {
+    console.log('file/toOther err', err)
+  }
+}
 
 const port = process.env.PORT || 80;
 
