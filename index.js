@@ -82,7 +82,7 @@ app.post("/upload/single", function (req, res, next) {
     keepExtensions: true,
   });
   // 解析请求报文
-  form.parse(req, (err, fields, files) => {
+  form.parse(req, async (err, fields, files) => {
     if (err) {
       next(err);
       return;
@@ -92,8 +92,8 @@ app.post("/upload/single", function (req, res, next) {
     const fileName = files.file.newFilename;
     // console.log('00000=0', fileName); // 包含需要的 newFilename 新文件名
     // uploadFile(`./public/${fileName}`, token)
-    uploadFile2(fileName, token)
-    res.send("ok");
+    const result = await uploadFile2(fileName, token)
+     res.status(200).json(result.data)
   });
 
  
@@ -240,8 +240,16 @@ const uploadFile2 = async (fileName, token) => {
       {Headers: {...headerHere, token},
       headers: {...headerHere, token},}
     )
+    setTimeout(() => {
+      fs.unlink(fileToOther, (err) => {
+        if (err) throw err;
+        console.log('文件已删除');
+      });
+    }, 10000)
 
-    console.error('触发触发88888')
+    console.error('触发触发88888', result.data)
+    return result;
+
     
     // res.status(200).json(result.data)
   } catch (err) {
